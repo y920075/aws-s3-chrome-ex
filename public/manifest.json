@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "AWS S3 Uploader for Chrome",
+  "version": "1.0",
+  "icons": {
+    "16": "images/aws-16.png",
+    "32": "images/aws-32.png",
+    "48": "images/aws-48.png",
+    "128": "images/aws-128.png"
+  },
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Your Extension Name"
+  }
+}
