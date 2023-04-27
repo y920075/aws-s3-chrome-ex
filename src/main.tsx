@@ -9,6 +9,10 @@ import S3Provider from "./contexts/S3Provider.tsx";
 
 const client = new QueryClient();
 
+chrome.runtime.onMessage.addListener((message) => {
+  console.log("chrome ext onMessage", message);
+});
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={client}>

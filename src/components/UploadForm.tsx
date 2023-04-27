@@ -1,5 +1,5 @@
-import FullScreenSpinner from "./Spinner/FullScreenSpinner";
-import { ErrorAlert, SuccessAlert } from "./Alert";
+import FullScreenSpinner from "src/components/Spinner/FullScreenSpinner";
+import { ErrorAlert, SuccessAlert } from "src/components/Alert";
 
 import useS3 from "../hooks/useS3";
 
@@ -14,7 +14,9 @@ const UploadForm = () => {
 
     if (file instanceof File) {
       try {
-        await mutateAsync(file);
+        const url = await mutateAsync(file);
+
+        navigator.clipboard.writeText(url);
       } catch (error) {
         console.error(error);
       }
@@ -29,7 +31,7 @@ const UploadForm = () => {
       >
         <div className="form-control mb-4">
           <label className="label">
-            <span className="label-text">Upload an Image</span>
+            <span className="label-text">選擇圖片</span>
           </label>
           <input
             type="file"
@@ -39,18 +41,21 @@ const UploadForm = () => {
           />
         </div>
         <button className="btn btn-primary" disabled={isLoading}>
-          Upload
+          上傳
         </button>
       </form>
       <div className="mt-4">
         {isSuccess && (
           <>
-            <SuccessAlert>上傳成功！</SuccessAlert>
-            <div className="mockup-code">
-              <pre data-prefix="$">
-                <code>![]({data})</code>
-              </pre>
-            </div>
+            <SuccessAlert>上傳成功並保存至剪貼簿！</SuccessAlert>
+            <p
+              className="py-2"
+              onClick={() => {
+                navigator.clipboard.writeText(data);
+              }}
+            >
+              {data}
+            </p>
           </>
         )}
         {isError && <ErrorAlert>上傳失敗！</ErrorAlert>}

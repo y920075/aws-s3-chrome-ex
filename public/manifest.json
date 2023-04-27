@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "AWS S3 Uploader for Chrome",
+  "name": "AWS S3 Uploader",
   "version": "1.0",
   "icons": {
     "16": "images/aws-16.png",
@@ -8,9 +8,26 @@
     "48": "images/aws-48.png",
     "128": "images/aws-128.png"
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage",
+    "clipboardWrite",
+    "contextMenus",
+    "clipboardRead",
+    "tabs",
+    "notifications"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
   "action": {
     "default_popup": "index.html",
-    "default_title": "Your Extension Name"
+    "default_title": "AWS S3 Uploader"
   }
 }

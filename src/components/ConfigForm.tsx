@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 import useS3 from "../hooks/useS3";
@@ -10,11 +11,12 @@ type Inputs = {
 };
 
 const ConfigForm = () => {
-  const { setup } = useS3();
+  const { setup, getConfig } = useS3();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = ({
     bucketName,
@@ -29,6 +31,17 @@ const ConfigForm = () => {
       secretAccessKey: secretAccessKey.trim(),
     });
   };
+
+  useEffect(() => {
+    getConfig().then((c) => {
+      if (c) {
+        setValue("accessKeyId", c.accessKeyId);
+        setValue("bucketName", c.bucketName);
+        setValue("region", c.region);
+        setValue("secretAccessKey", c.secretAccessKey);
+      }
+    });
+  }, [getConfig, setValue]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -84,7 +97,7 @@ const ConfigForm = () => {
         />
       </div>
 
-      <button className="btn text-lg mt-4 mx-auto block w-full">Confirm</button>
+      <button className="btn text-lg mt-4 mx-auto block w-full">確認</button>
     </form>
   );
 };
