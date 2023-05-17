@@ -6,7 +6,6 @@ import {
 } from "src/services/aws";
 
 const UPLOAD_IMAGE = "upload_image";
-// const UPLOAD_IMAGE_GET_MD_LINK = "upload_image_get_MD_link";
 
 const client: S3Client = new S3Client();
 
@@ -17,9 +16,6 @@ const setupClient = (config: AWSConfig) => {
     chrome.contextMenus.update(UPLOAD_IMAGE, {
       visible: true,
     });
-    // chrome.contextMenus.update(UPLOAD_IMAGE_GET_MD_LINK, {
-    //   visible: true,
-    // });
   } catch (error) {
     console.error("setupClient error", error);
   }
@@ -61,13 +57,6 @@ chrome.contextMenus.create({
   contexts: ["image"],
   visible: false,
 });
-// chrome.contextMenus.create({
-//   id: UPLOAD_IMAGE_GET_MD_LINK,
-//   type: "normal",
-//   title: "上傳複製的圖片並取得 Markdown 連結",
-//   contexts: ["all"],
-//   visible: false,
-// });
 
 chrome.runtime.onMessage.addListener(({ type, payload }, _, sendResponse) => {
   switch (type) {
@@ -122,41 +111,5 @@ chrome.contextMenus.onClicked.addListener(async function (info) {
 
       break;
     }
-    // case UPLOAD_IMAGE_GET_MD_LINK: {
-    //   const tabs = await queryActiveTab();
-    //   const tabId = tabs[0].id;
-    //   if (!tabId) return;
-
-    //   const result = await chrome.tabs.sendMessage(tabId, {
-    //     type: "readImageFromClipboard",
-    //   });
-
-    //   if (!result?.blob || !result?.ext) {
-    //     console.warn("No image found in clipboard", {
-    //       result,
-    //       time: Date.now(),
-    //     });
-    //     return;
-    //   }
-    //   const { blob, ext } = result;
-
-    //   const file = new File([blob], `image.${ext}`, { type: blob.type });
-    //   try {
-    //     const url = await client.upload(file);
-    //     const tabs = await queryActiveTab();
-    //     const tabId = tabs[0].id;
-    //     if (!tabId) return;
-
-    //     const success = await chrome.tabs.sendMessage(tabId, {
-    //       type: "writeTextToClipboard",
-    //       payload: url,
-    //     });
-    //     notifyToUser(success ? "已複製到剪貼簿" : "複製失敗");
-    //   } catch (error) {
-    //     notifyToUser("上傳失敗");
-    //   }
-
-    //   break;
-    // }
   }
 });

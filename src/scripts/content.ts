@@ -16,30 +16,5 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _, sendResponse) => {
 
       // 使用非同步任務的話，需要回傳 true
       return true;
-
-    // case "readImageFromClipboard": {
-    //   (async () => {
-    //     const items = await navigator.clipboard.read();
-    //     console.log(items);
-    //     let blob: Blob | null = null;
-    //     let ext = "png";
-    //     for (const item of items) {
-    //       for (const type of item.types) {
-    //         console.log({ type });
-    //         await item.getType(type).then(console.log);
-
-    //         if (type.startsWith("image")) {
-    //           blob = await item.getType(type);
-    //           ext = type.split("/").pop() || "png";
-    //           console.log({ blob, ext, type, items });
-    //         }
-    //       }
-    //     }
-
-    //     sendResponse({ blob, ext });
-    //   })();
-    //   // 使用非同步任務的話，需要回傳 true
-    //   return true;
-    // }
   }
 });

@@ -11,6 +11,7 @@ type S3ProviderContext = {
   useUploadFile: () => UseMutationResult<string, unknown, File, unknown>;
 };
 
+const SUCCESS_MESSAGE = "setupClientSuccess";
 const Context = createContext<S3ProviderContext>({} as S3ProviderContext);
 
 const S3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -21,7 +22,7 @@ const S3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       type: "setupClient",
       payload: config,
     });
-    setClientIsSetup(result === "setupClientSuccess");
+    setClientIsSetup(result === SUCCESS_MESSAGE);
   }, []);
 
   const getConfig = useCallback(async () => {
@@ -53,14 +54,16 @@ const S3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const useUploadFile = () => useMutation(upload);
 
   useEffect(() => {
-    chrome.runtime.sendMessage(
-      {
-        type: "getClient",
-      },
-      (client) => {
+    (async () => {
+      let sendMsg = true;
+      while (sendMsg) {
+        const client = await chrome.runtime.sendMessage({
+          type: "getClient",
+        });
         setClientIsSetup(client !== null);
+        sendMsg = client === null;
       }
-    );
+    })();
   }, []);
 
   return (
