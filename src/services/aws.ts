@@ -1,8 +1,5 @@
 import * as AWS from "@aws-sdk/client-s3";
 
-const CHROME_STORAGE_KEY = "AWS_CONFIG";
-const chromeStorage = chrome?.storage?.local;
-
 type AWSConfig = {
   bucketName: string;
   region: string;
@@ -10,43 +7,8 @@ type AWSConfig = {
   secretAccessKey: string;
 };
 
-const loadConfigFromStorage = async () => {
-  if (!chromeStorage) {
-    return null;
-  }
-
-  const result = await chromeStorage.get(CHROME_STORAGE_KEY);
-  if (
-    result[CHROME_STORAGE_KEY] &&
-    typeof result[CHROME_STORAGE_KEY].bucketName === "string" &&
-    typeof result[CHROME_STORAGE_KEY].region === "string" &&
-    typeof result[CHROME_STORAGE_KEY].accessKeyId === "string" &&
-    typeof result[CHROME_STORAGE_KEY].secretAccessKey === "string"
-  ) {
-    return result[CHROME_STORAGE_KEY] as AWSConfig;
-  } else {
-    return null;
-  }
-};
-
 const getObjectUrl = (key: string, bucketName: string, region: string) => {
   return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
-};
-
-const saveConfigToStorage = (config: AWSConfig) => {
-  if (!chromeStorage) {
-    return;
-  }
-
-  chromeStorage.set({ [CHROME_STORAGE_KEY]: config });
-};
-
-const removeConfigFromStorage = () => {
-  if (!chromeStorage) {
-    return;
-  }
-
-  chromeStorage.remove(CHROME_STORAGE_KEY);
 };
 
 class S3Client {
@@ -96,8 +58,22 @@ class S3Client {
 
     try {
       const command = new AWS.PutObjectCommand(params);
-      await this.client.send(command);
-      return getObjectUrl(key, this.config.bucketName, this.config.region);
+      const result = await this.client.send(command);
+      console.log(`File uploaded`, result);
+
+      const r = {
+        key,
+        requestId: result.$metadata.requestId,
+        httpStatusCode: result.$metadata.httpStatusCode,
+        eTag: result.ETag,
+        objectUrl: getObjectUrl(
+          key,
+          this.config.bucketName,
+          this.config.region
+        ),
+      };
+
+      return r;
     } catch (error) {
       console.log(`Error uploading file: ${JSON.stringify(error)} `);
       throw error;
@@ -105,10 +81,5 @@ class S3Client {
   };
 }
 
-export {
-  loadConfigFromStorage,
-  saveConfigToStorage,
-  removeConfigFromStorage,
-  S3Client,
-};
+export { S3Client };
 export type { AWSConfig };

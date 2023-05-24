@@ -13,8 +13,8 @@ export default defineConfig({
     rollupOptions: {
       input: [
         "./index.html",
-        "./src/scripts/content.ts",
-        "./src/scripts/background.ts",
+        "./src/chrome-extension/content.ts",
+        "./src/chrome-extension/background.ts",
       ],
       output: {
         format: "esm",
