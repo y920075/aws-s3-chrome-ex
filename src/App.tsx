@@ -19,7 +19,14 @@ function App() {
         <h1 className="text-center text-2xl font-bold ">AWS S3 Uploader</h1>
         {clientIsSetup ? (
           <div className="flex gap-x-2">
-            <button className="w-6 h-6" type="button" onClick={clear}>
+            <button
+              className="w-6 h-6"
+              type="button"
+              onClick={() => {
+                clear();
+                setShowHistory(false);
+              }}
+            >
               <img src={settingSvg} />
             </button>
             <button
