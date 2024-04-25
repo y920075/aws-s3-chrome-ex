@@ -6,6 +6,7 @@ const ACTION_TYPES = {
   GET_CLIENT: "getClient",
   GET_HISTORY: "getHistory",
   UPLOAD_FILE: "uploadFile",
+  REMOVE_ALL_HISTORY: "removeAllHistory",
 } as const;
 
 export { ACTION_TYPES };

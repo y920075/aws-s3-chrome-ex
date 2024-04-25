@@ -23,20 +23,20 @@ function App() {
               className="w-6 h-6"
               type="button"
               onClick={() => {
-                clear();
-                setShowHistory(false);
+                setShowHistory(!showHistory);
               }}
             >
-              <img src={settingSvg} />
+              <img src={showHistory ? uploadSvg : historySvg} />
             </button>
             <button
               className="w-6 h-6"
               type="button"
               onClick={() => {
-                setShowHistory(!showHistory);
+                clear();
+                setShowHistory(false);
               }}
             >
-              <img src={showHistory ? uploadSvg : historySvg} />
+              <img src={settingSvg} />
             </button>
           </div>
         ) : (

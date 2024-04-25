@@ -5,6 +5,7 @@ import {
   saveConfigToStorage,
   saveHistoryToStorage,
   loadHistoryFromStorage,
+  removeAllHistoryFromStorage,
 } from "./storageHelper";
 import { ACTION_TYPES } from "./constant";
 
@@ -83,6 +84,24 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _, sendResponse) => {
       })();
       return true;
     }
+    case ACTION_TYPES.REMOVE_ALL_HISTORY: {
+      (async () => {
+        try {
+          const config = await loadConfigFromStorage();
+          if (!config) {
+            sendResponse(false);
+            return;
+          }
+
+          await removeAllHistoryFromStorage(config.bucketName, config.region);
+          sendResponse(true);
+        } catch (error) {
+          sendResponse(false);
+        }
+      })();
+      return true;
+    }
+
     default:
       break;
   }
@@ -94,7 +113,9 @@ chrome.contextMenus.onClicked.addListener(async function (info) {
       if (!info.srcUrl || !client.S3Config) return;
       const file = await createFileFromObjectURL(info.srcUrl);
       try {
+        notifyToUser("上傳檔案中...");
         const r = await client.upload(file);
+        notifyToUser("檔案上傳成功");
         await saveHistoryToStorage(
           client.S3Config.bucketName,
           client.S3Config.region,
@@ -115,10 +136,13 @@ chrome.contextMenus.onClicked.addListener(async function (info) {
             type: ACTION_TYPES.WRITE_TEXT_TO_CLIPBOARD,
             payload: r.objectUrl,
           });
-          notifyToUser(success ? "已複製到剪貼簿" : "複製失敗");
+          notifyToUser(success ? "URL已複製到剪貼簿" : "URL複製到剪貼簿失敗");
         } catch (error) {
           console.error(error);
-          notifyToUser("複製失敗");
+          notifyToUser(
+            "URL複製到剪貼簿失敗: " +
+              (error instanceof Error ? error.message : "")
+          );
         }
       } catch (error) {
         console.error(error);

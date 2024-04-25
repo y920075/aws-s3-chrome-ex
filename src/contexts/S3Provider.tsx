@@ -4,6 +4,7 @@ import {
   UseMutationResult,
   UseQueryResult,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 
 import { ACTION_TYPES } from "src/chrome-extension/constant";
@@ -17,11 +18,13 @@ type S3ProviderContext = {
   getConfig: () => Promise<AWSConfig | null>;
   useUploadFile: () => UseMutationResult<string, unknown, File, unknown>;
   useGetHistory: () => UseQueryResult<HistoryData[], unknown>;
+  removeAllHistory: () => void;
 };
 
 const Context = createContext<S3ProviderContext>({} as S3ProviderContext);
 
 const S3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
   const [clientIsSetup, setClientIsSetup] = useState(false);
 
   const setup = useCallback(async (config: AWSConfig) => {
@@ -66,7 +69,15 @@ const S3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const useUploadFile = () => useMutation(upload);
-  const useGetHistory = () => useQuery(["History "], getHistory);
+  const useGetHistory = () => useQuery(["History"], getHistory);
+  const removeAllHistory = async () => {
+    const ok = await chrome.runtime.sendMessage({
+      type: ACTION_TYPES.REMOVE_ALL_HISTORY,
+    });
+    if (ok) {
+      queryClient.invalidateQueries(["History"]);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -90,6 +101,7 @@ const S3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         clientIsSetup,
         useUploadFile,
         useGetHistory,
+        removeAllHistory,
       }}
     >
       {children}
