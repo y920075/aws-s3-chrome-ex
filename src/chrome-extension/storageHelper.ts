@@ -20,7 +20,7 @@ const loadHistoryFromStorage = async (
   }
 
   const result = await chromeStorage.get(region);
-  const _r = result[region][bucketName];
+  const _r = result[region]?.[bucketName];
   if (_r) {
     return _r as HistoryData[];
   } else {
